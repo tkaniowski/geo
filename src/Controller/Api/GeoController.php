@@ -27,6 +27,25 @@ class GeoController extends Controller
         ]);
     }
 
+    /**
+     * Return.
+     * @FOSRest\Get("/location/{id}", name="get_location")
+     *
+     * @return array
+     */
+    public function getLocation($id)
+    {
+
+        $location = $this->getDoctrine()
+            ->getRepository(Location::class)->findLocationWithRelated($id);
+
+//$view = $this->view($location, 200)
+//            ->setTemplate("MyBundle:Location:getLocationss.html.twig")
+//            ->setTemplateVar('location');
+
+        return $this->json($location);
+    }
+
      /**
      * Return id of created location.
      * @FOSRest\Post("/location/")
@@ -46,6 +65,8 @@ class GeoController extends Controller
             $em = $this->getDoctrine()->getManager();
             $em->persist($location);
             $em->flush();
+
+            return $this->redirectToRoute('get_location', array('id' => $location->getId()));
 
         }
         return $this->json([

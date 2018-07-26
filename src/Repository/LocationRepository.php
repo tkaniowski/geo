@@ -19,6 +19,18 @@ class LocationRepository extends ServiceEntityRepository
         parent::__construct($registry, Location::class);
     }
 
+     /**
+     * @return all related locations
+     */
+    public function findLocationWithRelated($id)
+    {
+        $sql    = 'SELECT DISTINCT * FROM location WHERE (id in(SELECT location_id from locations where related_location_id  = :id) OR id in(SELECT related_location_id from locations where location_id  = :id)) AND id <> :id ';
+        $params = array(
+            'id' => $id,
+        );
+        return $this->getEntityManager()->getConnection()->executeQuery($sql, $params)->fetchAll();
+    }
+
 //    /**
 //     * @return Location[] Returns an array of Location objects
 //     */
